@@ -8,8 +8,11 @@ import {
   MatCardSubtitle,
   MatCardContent,
 } from '@angular/material/card'
-import { MatIconButton, MatButton } from '@angular/material/button'
+
+// Import Dialog
 import { MatDialog } from '@angular/material/dialog'
+
+import { MatIconButton, MatButton } from '@angular/material/button'
 import {
   MatTable,
   MatColumnDef,
@@ -37,6 +40,7 @@ import { ProductService } from '../../services/product.service'
 // Import Environment
 import { environment } from '../../../environments/environment'
 import { CreateProductDialogComponent } from '../create-product-dialog/create-product-dialog.component'
+import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-dialog.component'
 
 @Component({
   selector: 'app-stock',
@@ -44,7 +48,7 @@ import { CreateProductDialogComponent } from '../create-product-dialog/create-pr
   styleUrl: './stock.component.scss',
   standalone: true,
   imports: [
-  RouterLink,
+    RouterLink,
     MatCard,
     MatCardHeader,
     MatCardTitle,
@@ -70,8 +74,8 @@ import { CreateProductDialogComponent } from '../create-product-dialog/create-pr
     FormsModule,
     DecimalPipe,
     SlicePipe,
-    MatIconButton,
-    MatButton
+    MatButton,
+    MatIconButton
   ]
 })
 export class StockComponent implements OnInit {
@@ -138,10 +142,31 @@ export class StockComponent implements OnInit {
   }
 
   // Method onClickAddProduct
-  async onClickAddProduct(){
-    // เปิด Dialog เพิ่ม Product
+  async onClickAddProduct() {
+    // เรียกเปิด dialog สำหรับเพิ่มสินค้า
     const dialogAddRef = await this.dialog.open(CreateProductDialogComponent, {
       width: '600px',
+    })
+
+    dialogAddRef.componentInstance.productCreated.subscribe((created) => {
+      if (created) {
+        // ดึงข้อมูลสินค้า
+        this.getProducts()
+      }
+    })
+  }
+
+  // Method onClickEdit
+  async onClickEdit(product: any) {
+    const dialogEditRef = await this.dialog.open(EditProductDialogComponent, {
+      width: '600px',
+      data: product,
+    })
+
+    dialogEditRef.componentInstance.productUpdated.subscribe((updated) => {
+      if(updated) {
+        this.getProducts()
+      }
     })
   }
 
